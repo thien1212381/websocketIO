@@ -1,0 +1,70 @@
+<html>
+<head>
+    <title>Example: chatting</title>
+</head>
+
+<style>
+    #chat {
+        text-align: left;
+        background: #f1f1f1;
+        width: 500px;
+        min-height: 300px;
+        padding: 20px;
+    }
+</style>
+
+<body>
+<center>
+    <h3 id="name"></h3>
+    <pre id="chat"></pre>
+    <input placeholder="say something" id="text" type="text">
+</center>
+
+<script>
+    var url = "ws://" + window.location.host +window.location.pathname + "/ws";
+    console.log(url);
+    var ws = new WebSocket(url);
+    var name = "Guest" + Math.floor(Math.random() * 1000);
+    var channelName = window.location.pathname.split("/")[2];
+    document.getElementById("name").innerText = "Channel: " + channelName;
+    var chat = document.getElementById("chat");
+    var text = document.getElementById("text");
+    var now = function () {
+        var iso = new Date().toISOString();
+        return iso.split("T")[1].split(".")[0];
+    };
+    ws.onopen = function (event) {
+        var jsonData =  {
+            "type" : "authenticate",
+            "data" : {
+                "token" : "token here"
+            }
+        }
+        ws.send(JSON.stringify(jsonData))
+    }
+    ws.onmessage = function (msg) {
+        var jsonParse = JSON.parse(msg.data);
+        if (jsonParse.type == "message") {
+            var line =  now() + " " + jsonParse.data.msg + "\n";
+            chat.innerText += line;
+        } else {
+            console.log(jsonParse.data);
+        }
+
+    };
+    text.onkeydown = function (e) {
+        if (e.keyCode === 13 && text.value !== "") {
+            var msg = "<" + name + "> " + text.value;
+            var jsonData = {
+                "type" : "message",
+                "data" : {
+                    "msg" : msg
+                }
+            }
+            ws.send(JSON.stringify(jsonData));
+            text.value = "";
+        }
+    };
+</script>
+</body>
+</html>
