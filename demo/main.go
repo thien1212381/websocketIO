@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"github.com/thien1212381/websocketSimple"
+	"github.com/thien1212381/websocketIO"
 	"log"
 )
 
