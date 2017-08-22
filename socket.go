@@ -41,7 +41,7 @@ func (s *Socket) Start() {
 
 	s.NS["global"] = NewNameSpace()
 
-	s.m.HandleMessage(func(ses *melody.Session, byteData []byte) {
+	funcListenHandler := func(ses *melody.Session, byteData []byte) {
 		session := newSession(ses)
 		ns := session.GetNameSpace()
 		namespace := s.NS[ns]
@@ -77,7 +77,11 @@ func (s *Socket) Start() {
 		} else {
 			log.Println("This namespace does not exist! - ", ns)
 		}
-	})
+	}
+
+	s.m.HandleMessage(funcListenHandler)
+
+	s.m.HandleMessageBinary(funcListenHandler)
 
 	s.m.HandleConnect(func(ses *melody.Session) {
 		session := newSession(ses)
