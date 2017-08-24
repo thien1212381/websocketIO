@@ -90,8 +90,7 @@ func (s *Socket) Start() {
 		if s.NS[namespace] != nil {
 			if !s.NS[namespace].isAuthen {
 				s.NS[namespace].l = append(s.NS[namespace].l, session)
-				handleConnected := s.NS[namespace].h[CONNECTED]
-				if handleConnected != nil {
+				if handleConnected, ok := s.NS[namespace].h[CONNECTED]; ok {
 					handleConnected(session, map[string]interface{}{})
 				}
 			}
@@ -108,8 +107,7 @@ func (s *Socket) Start() {
 
 			if index >= 0 {
 				s.NS[ns].l = append(s.NS[ns].l[:index], s.NS[ns].l[index+1:]...)
-				handleDisconnected := s.NS[ns].h[DISCONNECTED]
-				if handleDisconnected != nil {
+				if handleDisconnected,ok := s.NS[ns].h[DISCONNECTED]; ok {
 					handleDisconnected(session, map[string]interface{}{})
 				}
 			}
